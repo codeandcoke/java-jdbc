@@ -9,6 +9,9 @@ import java.util.ArrayList;
 
 import org.sfsoft.sentenciassql.base.Personaje;
 
+/**
+* @author Santiago Faci
+*/
 public class Database {
 	
 	private Connection conexion;
