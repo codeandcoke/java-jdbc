@@ -1,5 +1,8 @@
 package org.sfsoft.sentenciassql.base;
 
+/**
+* @author Santiago Faci
+*/
 public class Personaje {
 
 	private int id;
