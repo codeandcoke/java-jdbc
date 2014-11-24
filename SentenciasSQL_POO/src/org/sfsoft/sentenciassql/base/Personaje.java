@@ -1,8 +1,10 @@
 package org.sfsoft.sentenciassql.base;
 
 /**
-* @author Santiago Faci
-*/
+ * Clase que representa a un personaje
+ * @author Santiago Faci
+ * @curso 2014-2015
+ */
 public class Personaje {
 
 	private int id;

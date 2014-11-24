@@ -1,13 +1,8 @@
 package org.sfsoft.sentenciassql.gui;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.ArrayList;
 
-import javax.swing.JOptionPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
@@ -16,17 +11,15 @@ import org.sfsoft.sentenciassql.util.Constantes;
 
 /**
  * Clase que muestra el contenido de una tabla de MySQL en un JTable
- * Se han añadido métodos que permiten registrar, modificar y eliminar contenido de la Base de Datos
+ * Se han aÃ±adido mÃ©todos que permiten registrar, modificar y eliminar contenido de la Base de Datos
+ *
  * @author Santiago Faci
- * @version 2.0
+ * @version curso 2014-2015
  */
 public class JTablaDatos extends JTable {
 	
 	private DefaultTableModel modeloDatos;
-	
-	// Indica si estamos trabajando en modo depuración
-	private static final boolean DEBUG = false; 
-	
+
 	public JTablaDatos() {
 		super();
 
@@ -55,27 +48,27 @@ public class JTablaDatos extends JTable {
 	
 	/**
 	 * Lista el contenido de la tabla
-	 * @throws SQLException En caso de que haya algún problema de conexión con MySQL
+	 * @throws SQLException En caso de que haya algÃºn problema de conexiÃ³n con MySQL
 	 */
 	public void listar() throws SQLException {
 		
 		ArrayList<Personaje> personajes;
 		
-		personajes = SentenciasSQL.database.getPersonajes();
+		personajes = SentenciasSql.database.getPersonajes();
 		cargarFilas(personajes);
 	}
 	
 	/**
 	 * Lista el contenido de la tabla aplicando un filtro
 	 * @param filtro 
-	 * @throws SQLException En caso de que haya algún problema de conexión con MySQL
+	 * @throws SQLException En caso de que haya algÃºn problema de conexiÃ³n con MySQL
 	 */
 	public void listar(String filtro) throws SQLException {
 		
 		ArrayList<Personaje> personajes;
 		
-		personajes = 
-			SentenciasSQL.database.getPersonajes(filtro);
+		personajes =
+                SentenciasSql.database.getPersonajes(filtro);
 		cargarFilas(personajes);
 	}
 
@@ -97,7 +90,7 @@ public class JTablaDatos extends JTable {
 	}
 	
 	/**
-	 * Elimina todo el contenido del control JTable
+	 * Elimina el contenido del JTable
 	 */
 	public void vaciar() {
 		
@@ -106,7 +99,7 @@ public class JTablaDatos extends JTable {
 	
 	/**
 	 * Elimina, de la Base de Datos, el personaje seleccionado
-	 * @throws SQLException En caso de que haya algún problema de conexión con MySQL
+	 * @throws SQLException En caso de que haya algÃºn problema de conexiÃ³n con MySQL
 	 */
 	public void eliminar() throws SQLException {
 		
@@ -117,13 +110,13 @@ public class JTablaDatos extends JTable {
 			return;
 		
 		String nombreSeleccionado = (String) getValueAt(filaSeleccionada, 0);
-		SentenciasSQL.database.eliminarPersonaje(nombreSeleccionado);
+        SentenciasSql.database.eliminarPersonaje(nombreSeleccionado);
 	}
 	
 	public Personaje getPersonajeSeleccionado() throws SQLException {
 		
 		String nombre = (String) getValueAt(getSelectedRow(), 0);
 		
-		return SentenciasSQL.database.getPersonaje(nombre);
+		return SentenciasSql.database.getPersonaje(nombre);
 	}
 }

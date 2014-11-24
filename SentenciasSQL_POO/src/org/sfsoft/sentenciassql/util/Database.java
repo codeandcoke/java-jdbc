@@ -79,8 +79,7 @@ public class Database {
 	public ArrayList<Personaje> getPersonajes() 
 		throws SQLException {
 	
-		ArrayList<Personaje> personajes =
-			new ArrayList<Personaje>();
+		ArrayList<Personaje> personajes;
 		
 		String consulta = null;
 		PreparedStatement sentencia = null;
@@ -101,8 +100,7 @@ public class Database {
 	public ArrayList<Personaje> getPersonajes(String filtro) 
 			throws SQLException {
 		
-		ArrayList<Personaje> personajes =
-			new ArrayList<Personaje>();
+		ArrayList<Personaje> personajes;
 		
 		String consulta = null;
 		PreparedStatement sentencia = null;
@@ -125,7 +123,7 @@ public class Database {
 		throws SQLException {
 		
 		ArrayList<Personaje> personajes = 
-			new ArrayList<Personaje>();
+			new ArrayList<>();
 		
 		Personaje personaje = null;
 		while (resultado.next()) {
