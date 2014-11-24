@@ -9,7 +9,7 @@ import java.awt.event.KeyEvent;
 import java.sql.*;
 
 /**
- * Aplicación que comprueba la conexión con MySQL
+ * Aplicación que ejecuta sentencias SQL, procedimientos y funciones en MySQL
  * @author Santiago Faci
  * @version curso 2014-2015
  */
@@ -23,13 +23,12 @@ public class SentenciasSql {
     private JLabel lbPuntuacion;
     private JButton btCancelarBusqueda;
     private JButton btEliminarTodos;
-    private JScrollPane dfgggg;
+    private JScrollPane scrollPane;
     private JTablaDatos tablaDatos;
 
     private Connection conexion;
 
     public SentenciasSql() {
-
 
         btNuevo.addActionListener(new ActionListener() {
             @Override
@@ -134,6 +133,7 @@ public class SentenciasSql {
             conexion = DriverManager.getConnection("jdbc:mysql://" + host + ":3306" + "/" + catalogo, usuario, contrasena);
             lbEstado.setText("Se ha conectado con éxito");
             tablaDatos.setConexion(conexion);
+            cargarDatos();
 
         } catch (ClassNotFoundException cnfe) {
             JOptionPane.showMessageDialog(null, "No se ha podido cargar el driver de la Base de Datos");
