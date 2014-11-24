@@ -51,7 +51,7 @@ public class JTablaDatos extends JTable {
 		modeloDatos.addColumn(ENERGIA);
 		modeloDatos.addColumn(PUNTOS);
 		
-		this.setModel(modeloDatos);
+		setModel(modeloDatos);
 	}
 	
 	/**
