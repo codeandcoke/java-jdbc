@@ -1,140 +1,150 @@
 package org.sfsoft.holasql.gui;
 
-import java.awt.BorderLayout;
-import java.awt.FlowLayout;
-
-import javax.swing.JButton;
-import javax.swing.JDialog;
-import javax.swing.JPanel;
-import javax.swing.JPasswordField;
-import javax.swing.border.EmptyBorder;
-import javax.swing.JLabel;
-import javax.swing.JTextField;
-import java.awt.event.ActionListener;
+import javax.swing.*;
 import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 /**
- * Di醠ogo para recoger los datos de conexi髇 con un SGBD
+ * Di谩logo para recoger los datos de conexi贸n con un SGBD
  * @author Santiago Faci
- * @version 1.0
+ * @version curso 2014-2015
  */
 public class JConecta extends JDialog {
+    private JPanel panel1;
+    private JTextField tfUsuario;
+    private JPasswordField tfContrasena;
+    private JButton btConectar;
+    private JTextField tfHost;
+    private JButton btCancelar;
+    private JComboBox<String> cbCatalogo;
 
-	private static final long serialVersionUID = 1L;
-	private final JPanel contentPanel = new JPanel();
-	private JTextField txtUsuario;
-	private JPasswordField txtContrasena;
-	
-	private String usuario;
-	private String contrasena;
-	public enum Accion {
-		ACEPTAR, CANCELAR
-	}
-	private Accion accion;
+    private String host;
+    private String usuario;
+    private String contrasena;
+    private String catalogo;
+    public enum Accion {
+        ACEPTAR, CANCELAR
+    }
+    private Accion accion;
 
-	/**
-	 * El usuario ha pulsado aceptar. Se recogen los datos del formulario como atributos de la clase
-	 * y se esconde el formulario
-	 */
-	private void aceptar() {
-		
-		usuario = txtUsuario.getText();
-		contrasena = String.valueOf(txtContrasena.getPassword());
-		
-		accion = Accion.ACEPTAR;
-		setVisible(false);
-	}
-	
-	/**
-	 * El usuario cancela. Se esconde el formulario 
-	 */
-	private void cancelar() {
-		
-		accion = Accion.CANCELAR;
-		setVisible(false);
-	}
-	
+    public JConecta() {
+
+        setContentPane(panel1);
+        pack();
+        setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
+        setModal(true);
+        setLocationRelativeTo(null);
+
+        btConectar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                aceptar();
+            }
+        });
+
+        btCancelar.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                cancelar();
+            }
+        });
+
+        cbCatalogo.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusGained(FocusEvent e) {
+                listarCatalogo();
+            }
+        });
+    }
+
+    /**
+     * Lista las bases de datos disponibles en el servidor en un Combo
+     * Se ejecuta este m茅todo cuando el combo obtiene el foco (focusGained)
+     */
+    private void listarCatalogo() {
+
+        if (cbCatalogo.getItemCount() > 0)
+            return;
+
+        Connection conexion = null;
+
+        try {
+            Class.forName("com.mysql.jdbc.Driver").newInstance();
+            conexion = DriverManager.getConnection("jdbc:mysql://" + tfHost.getText() + ":3306"
+                    , tfUsuario.getText(), String.valueOf(tfContrasena.getPassword()));
+
+            // Obtiene informaci贸n sobre las Bases de Datos que hay en el servidor
+            ResultSet catalogo = conexion.getMetaData().getCatalogs();
+
+            while (catalogo.next()) {
+                cbCatalogo.addItem(catalogo.getString(1));
+            }
+            catalogo.close();
+
+        } catch (ClassNotFoundException cnfe) {
+            cnfe.printStackTrace();
+        } catch (SQLException sqle) {
+            sqle.printStackTrace();
+        } catch (InstantiationException ie) {
+            ie.printStackTrace();
+        } catch (IllegalAccessException iae) {
+            iae.printStackTrace();
+        }
+    }
+
+    /**
+     * El usuario ha pulsado aceptar. Se recogen los datos del formulario como atributos de la clase
+     * y se esconde el formulario
+     */
+    private void aceptar() {
+
+        host = tfHost.getText();
+        usuario = tfUsuario.getText();
+        contrasena = String.valueOf(tfContrasena.getPassword());
+        catalogo = (String) cbCatalogo.getSelectedItem();
+
+        accion = Accion.ACEPTAR;
+        setVisible(false);
+    }
+
+    /**
+     * El usuario cancela. Se esconde el formulario
+     */
+    private void cancelar() {
+
+        accion = Accion.CANCELAR;
+        setVisible(false);
+    }
+
 	/*
-	 * Getters para la recogida de informaci髇 del formulario desde la ventana principal 
-	 * de la aplicaci髇
+	 * Getters para la recogida de informaci贸n del formulario desde la ventana principal
+	 * de la aplicaci贸n
 	 */
-	
-	public String getUsuario() {
-		return usuario;
-	}
-	
-	public String getContrasena() {
-		return contrasena;
-	}
-	
-	public Accion getAccion() {
-		return accion;
-	}
-	
-	public Accion mostrarDialogo() {
-		setVisible(true);
-		
-		return accion;
-	}
-	
-	/**
-	 * Crea el di醠ogo y lo muestra en pantalla
-	 */
-	public JConecta() {
-		setDefaultCloseOperation(JDialog.DO_NOTHING_ON_CLOSE);
-		setModal(true);
-		setTitle("Conectar");
-		setBounds(100, 100, 271, 161);
-		getContentPane().setLayout(new BorderLayout());
-		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
-		getContentPane().add(contentPanel, BorderLayout.CENTER);
-		contentPanel.setLayout(null);
-		
-		JLabel lblUsuario = new JLabel("Usuario");
-		lblUsuario.setBounds(23, 35, 66, 14);
-		contentPanel.add(lblUsuario);
-		
-		JLabel lblContrasea = new JLabel("Contrase\u00F1a");
-		lblContrasea.setBounds(23, 65, 66, 14);
-		contentPanel.add(lblContrasea);
-		
-		txtUsuario = new JTextField();
-		txtUsuario.setBounds(136, 32, 106, 20);
-		contentPanel.add(txtUsuario);
-		txtUsuario.setColumns(10);
-		
-		txtContrasena = new JPasswordField();
-		txtContrasena.setBounds(136, 62, 106, 20);
-		contentPanel.add(txtContrasena);
-		txtContrasena.setColumns(10);
-		{
-			JPanel buttonPane = new JPanel();
-			buttonPane.setLayout(new FlowLayout(FlowLayout.RIGHT));
-			getContentPane().add(buttonPane, BorderLayout.SOUTH);
-			{
-				JButton okButton = new JButton("OK");
-				okButton.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent arg0) {
-						aceptar();
-					}
-				});
-				okButton.setActionCommand("OK");
-				buttonPane.add(okButton);
-				getRootPane().setDefaultButton(okButton);
-			}
-			{
-				JButton cancelButton = new JButton("Cancel");
-				cancelButton.addActionListener(new ActionListener() {
-					public void actionPerformed(ActionEvent e) {
-						cancelar();
-					}
-				});
-				cancelButton.setActionCommand("Cancel");
-				buttonPane.add(cancelButton);
-			}
-		}
-		
-		setLocationRelativeTo(null);
-	}
-	
+
+    public String getHost() {
+        return host;
+    }
+
+    public String getUsuario() {
+        return usuario;
+    }
+
+    public String getContrasena() {
+        return contrasena;
+    }
+
+    public String getCatalogo() { return catalogo; }
+
+    public Accion mostrarDialogo() {
+
+        setVisible(true);
+
+        return accion;
+    }
 }

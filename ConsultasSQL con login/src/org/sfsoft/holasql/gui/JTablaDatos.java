@@ -1,6 +1,7 @@
 package org.sfsoft.holasql.gui;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -8,19 +9,26 @@ import java.sql.Statement;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 
-
 /**
  * Clase que muestra el contenido de una tabla de MySQL en un JTable
+ * Se han a帽adido m茅todos que permiten registrar, modificar y eliminar contenido de la Base de Datos
+ *
  * @author Santiago Faci
- * @version 1.0
+ * @version curso 2014-2015
  */
 public class JTablaDatos extends JTable {
 	
+	// Conexi贸n con la Base de Datos
 	private Connection conexion;
 	private DefaultTableModel modeloDatos;
 	
-	private static final boolean DEBUG = false; 
-	
+	// Constantes para definir el nombre de la tabla y de las columnas de 茅sta
+	private static final String TABLA = "personajes";
+	private static final String NOMBRE = "nombre";
+	private static final String NIVEL = "nivel";
+	private static final String ENERGIA = "energia";
+	private static final String PUNTOS = "puntos";
+
 	public JTablaDatos() {
 		super();
 
@@ -28,7 +36,7 @@ public class JTablaDatos extends JTable {
 	}
 	
 	/**
-	 * Inicializa la estructura de la tabla
+	 * Inicializa la tabla, creando las columnas
 	 */
 	private void inicializar() {
 		
@@ -39,25 +47,25 @@ public class JTablaDatos extends JTable {
 			}
 		};
 		
-		modeloDatos.addColumn("nombre");
-		modeloDatos.addColumn("nivel");
-		modeloDatos.addColumn("energia");
-		modeloDatos.addColumn("puntos");
+		modeloDatos.addColumn(NOMBRE);
+		modeloDatos.addColumn(NIVEL);
+		modeloDatos.addColumn(ENERGIA);
+		modeloDatos.addColumn(PUNTOS);
 		
 		this.setModel(modeloDatos);
 	}
 	
 	/**
-	 * Fija la conexi髇 con la Base de Datos
-	 * @param conexion
+	 * Asigna una conexi贸n de datos a la tabla
+	 * @param conexion La conexi贸n con MySQL
 	 */
 	public void setConexion(Connection conexion) {
 		this.conexion = conexion;
 	}
 	
 	/**
-	 * Muestra el contenido de la tabla de la Base de Datos
-	 * @throws SQLException En caso de que haya alg鷑 fallo con la conexi髇
+	 * Lista el contenido de la tabla
+	 * @throws java.sql.SQLException En caso de que haya alg煤n problema de conexi贸n con MySQL
 	 */
 	public void listar() throws SQLException {
 		
@@ -67,16 +75,13 @@ public class JTablaDatos extends JTable {
 		if (conexion.isClosed())
 			return;
 		
-		if (DEBUG)
-			System.out.println("listando");
-		
 		String consulta = null;
-		Statement sentencia = null;
+		PreparedStatement sentencia = null;
 		ResultSet resultado = null;
 		
-		sentencia = conexion.createStatement();
-		consulta = "SELECT * FROM personajes";
-		resultado = sentencia.executeQuery(consulta);
+		consulta = "SELECT * FROM " + TABLA;
+		sentencia = conexion.prepareStatement(consulta);
+		resultado = sentencia.executeQuery();
 		
 		cargarFilas(resultado);
 		
@@ -85,9 +90,9 @@ public class JTablaDatos extends JTable {
 	}
 	
 	/**
-	 * Muestra los datos de la tabla aplicando un filtro
-	 * @param filtro
-	 * @throws SQLException En caso de que haya alg鷑 fallo con la conexi髇
+	 * Lista el contenido de la tabla aplicando un filtro
+	 * @param filtro 
+	 * @throws java.sql.SQLException En caso de que haya alg煤n problema de conexi贸n con MySQL
 	 */
 	public void listar(String filtro) throws SQLException {
 		
@@ -102,7 +107,7 @@ public class JTablaDatos extends JTable {
 		ResultSet resultado = null;
 		
 		sentencia = conexion.createStatement();
-		consulta = "SELECT * FROM personajes WHERE nombre LIKE '%" + filtro + "%'";
+		consulta = "SELECT * FROM " + TABLA + " WHERE " + NOMBRE + " LIKE '%" + filtro + "%'";
 		resultado = sentencia.executeQuery(consulta);
 		
 		cargarFilas(resultado);
@@ -112,7 +117,7 @@ public class JTablaDatos extends JTable {
 	}
 
 	/*
-	 * Recorre el control JTable con los datos de la tabla de la Base de Datos
+	 * 'Pinta' los datos en el JTable
 	 */
 	private void cargarFilas(ResultSet resultado) throws SQLException {
 	
@@ -123,5 +128,108 @@ public class JTablaDatos extends JTable {
 					String.valueOf(resultado.getInt(4)), String.valueOf(resultado.getInt(5))};
 			modeloDatos.addRow(fila);
 		}
+	}
+	
+	/**
+	 * Elimina el contenido del control JTable
+	 */
+	public void vaciar() {
+		
+		modeloDatos.setNumRows(0);
+	}
+	
+	/**
+	 * Registra un nuevo personaje en la Base de Datos
+	 * @param nombre
+	 * @param nivel
+	 * @param energia
+	 * @param puntos
+	 * @throws java.sql.SQLException En caso de que haya alg煤n problema de conexi贸n con MySQL
+	 */
+	public void nuevo(String nombre, int nivel, int energia, int puntos) throws SQLException {
+		
+		String sentenciaSql = "INSERT INTO " + TABLA + " ("  + NOMBRE + ", " + NIVEL + ", "
+				+ ENERGIA + ", " + PUNTOS + ") VALUES (?, ?, ?,?)";
+		PreparedStatement sentencia = conexion.prepareStatement(sentenciaSql);
+		sentencia.setString(1, nombre);
+		sentencia.setInt(2, nivel);
+		sentencia.setInt(3, energia);
+		sentencia.setInt(4, puntos);
+		sentencia.executeUpdate();
+		
+		if (sentencia != null)
+			sentencia.close();
+	}
+	
+	/**
+	 * Modifica los datos de un personaje en la Base de Datos
+	 * @param nombre
+	 * @param nivel
+	 * @param energia
+	 * @param puntos
+	 * @throws java.sql.SQLException En caso de que haya alg煤n problema de conexi贸n con MySQL
+	 */
+	public void modificar(String nombreOriginal, String nombre, int nivel, int energia, int puntos) 
+			throws SQLException {
+		
+		String sentenciaSql = "UPDATE " + TABLA + " SET " + NOMBRE + " = ?, "
+				+ NIVEL + " = ?, " + ENERGIA + " = ?, "
+				+ PUNTOS + " = ? WHERE " + NOMBRE + " = ?";
+		
+		PreparedStatement sentencia = conexion.prepareStatement(sentenciaSql);
+		sentencia.setString(1, nombre);
+		sentencia.setInt(2, nivel);
+		sentencia.setInt(3, energia);
+		sentencia.setInt(4, puntos);
+		sentencia.setString(5, nombreOriginal);
+		sentencia.executeUpdate();
+		
+		if (sentencia != null)
+			sentencia.close();
+	}
+	
+	/**
+	 * Elimina, de la Base de Datos, el personaje seleccionado
+	 * @throws java.sql.SQLException En caso de que haya alg煤n problema de conexi贸n con MySQL
+	 */
+	public void eliminar() throws SQLException {
+		
+		int filaSeleccionada = 0;
+		
+		filaSeleccionada = getSelectedRow();
+		if (filaSeleccionada == -1) 
+			return;
+		
+		String nombreSeleccionado = (String) getValueAt(filaSeleccionada, 0);
+		String sentenciaSql = "DELETE FROM " + TABLA + " WHERE " + NOMBRE + " = ?";
+		
+		PreparedStatement sentencia = conexion.prepareStatement(sentenciaSql);
+		sentencia.setString(1, nombreSeleccionado);
+		sentencia.executeUpdate();
+		
+		if (sentencia != null)
+				sentencia.close();
+	}
+	
+	/**
+	 * Comprueba si un personaje ya est谩 repetido en la Base de Datos (si se repite el nombre)
+	 * @param nombre
+	 * @return true si el personaje ya existe, false en caso contrario
+	 * @throws java.sql.SQLException En caso de que haya un fallo de conexi贸n con MySQL
+	 */
+	public boolean existe(String nombre) throws SQLException {
+		
+		String consulta = "SELECT COUNT(*) FROM " + TABLA + " WHERE " + NOMBRE + " = ?";
+		
+		PreparedStatement sentencia = conexion.prepareStatement(consulta);
+		sentencia.setString(1, nombre);
+		ResultSet resultado = sentencia.executeQuery();
+		
+		resultado.next();
+		
+		if (resultado.getInt(1) == 1) 
+			return true;
+			
+		return false;
 	}
 }

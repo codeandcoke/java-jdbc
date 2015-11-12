@@ -78,12 +78,12 @@
           </component>
         </children>
       </grid>
-      <scrollpane id="615b9" binding="dfgggg">
+      <scrollpane id="615b9" binding="scrollPane">
         <constraints border-constraint="Center"/>
         <properties/>
         <border type="none"/>
         <children>
-          <component id="820b2" class="org.sfsoft.sentenciassql.gui.JTablaDatos">
+          <component id="820b2" class="org.sfsoft.sentenciassql.gui.JTablaDatos" binding="tablaDatos">
             <constraints/>
             <properties/>
           </component>

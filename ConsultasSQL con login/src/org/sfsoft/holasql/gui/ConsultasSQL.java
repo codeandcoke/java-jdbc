@@ -31,8 +31,10 @@ import org.sfsoft.holasql.gui.JConecta.Accion;
 
 /**
  * Ejemplo que consulta una Base de Datos MySQL utilizando el driver JDBC
- * @author Santiago Faci
+ * utilizando un sistema de Login
  *
+ * @author Santiago Faci
+ * @version curso 2014-2015
  */
 public class ConsultasSQL {
 
@@ -154,9 +156,9 @@ public class ConsultasSQL {
 					usuario, contrasena);
 		
 		} catch (FileNotFoundException fnfe) {
-			JOptionPane.showMessageDialog(null, "Error al leer el fichero de configuración");
+			JOptionPane.showMessageDialog(null, "Error al leer el fichero de configuraciï¿½n");
 		} catch (IOException ioe) {
-			JOptionPane.showMessageDialog(null, "Error al leer el fichero de configuración");
+			JOptionPane.showMessageDialog(null, "Error al leer el fichero de configuraciï¿½n");
 		} catch (ClassNotFoundException cnfe) {
 			JOptionPane.showMessageDialog(null, "No se ha podido cargar el driver de la Base de Datos");
 		} catch (SQLException sqle) {
@@ -186,7 +188,7 @@ public class ConsultasSQL {
 	}
 	
 	/*
-	 * Sale de la aplicación
+	 * Sale de la aplicaciï¿½n
 	 */
 	private void salir() {
 		
@@ -210,7 +212,7 @@ public class ConsultasSQL {
 	}
 	
 	/*
-	 * Aplica un filtro para realizar búsquedas
+	 * Aplica un filtro para realizar bï¿½squedas
 	 */
 	private void buscar() {
 		
@@ -230,7 +232,7 @@ public class ConsultasSQL {
 	}
 	
 	/*
-	 * Limpiar el filtro de búsqueda y los resultados
+	 * Limpiar el filtro de bï¿½squeda y los resultados
 	 */
 	private void cancelarBusqueda() {
 		
