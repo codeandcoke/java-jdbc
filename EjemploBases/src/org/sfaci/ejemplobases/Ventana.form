@@ -174,7 +174,7 @@
                 <properties/>
                 <border type="none"/>
                 <children>
-                  <component id="9689e" class="javax.swing.JTable" binding="tabla">
+                  <component id="723bf" class="javax.swing.JTable" binding="tablaCantantes">
                     <constraints/>
                     <properties/>
                   </component>

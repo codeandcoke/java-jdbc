@@ -8,7 +8,7 @@ public class JLogin extends JDialog implements ActionListener {
     private JButton btAceptar;
     private JButton btCancelar;
     private JTextField tfUsuario;
-    private JTextField tfContrasena;
+    private JPasswordField tfContrasena;
 
     private String usuario;
     private String contrasena;
@@ -38,7 +38,7 @@ public class JLogin extends JDialog implements ActionListener {
 
     private void aceptar() {
         if ((tfUsuario.getText().equals(""))
-            || (tfContrasena.getText().equals(""))) {
+            || (tfContrasena.getPassword().toString().equals(""))) {
             JOptionPane.showMessageDialog(null,
                     "Debes introducir usuario y contraseña",
                     "Login", JOptionPane.ERROR_MESSAGE);
